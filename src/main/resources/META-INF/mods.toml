@@ -1,0 +1,23 @@
+modLoader = "javafml"
+loaderVersion = "[37,)"
+license = "GPLv3"
+issueTrackerURL = "https://github.com/DavidQF555/RealityCubes/issues"
+[[mods]]
+modId = "realitycubes"
+version = "${file.jarVersion}"
+displayName = "Reality Cubes"
+displayURL = "https://github.com/DavidQF555/Reality Cubes"
+authors = "DavidQF555"
+description = 'This mod adds reality cubes. '
+[[dependencies.realitycubes]]
+modId = "forge"
+mandatory = true
+versionRange = "[37,)"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.realitycubes]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.17.1,1.18)"
+ordering = "NONE"
+side = "BOTH"
