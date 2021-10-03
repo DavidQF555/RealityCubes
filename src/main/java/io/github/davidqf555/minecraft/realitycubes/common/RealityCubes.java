@@ -5,6 +5,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fmllegacy.network.NetworkRegistry;
 import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
+import org.spongepowered.asm.launch.MixinBootstrap;
+import org.spongepowered.asm.mixin.Mixins;
 
 @Mod("realitycubes")
 public class RealityCubes {
@@ -18,6 +20,8 @@ public class RealityCubes {
             PROTOCOL_VERSION::equals);
 
     public RealityCubes() {
+        MixinBootstrap.init();
+        Mixins.addConfiguration(MOD_ID + ".mixins.json");
         MinecraftForge.EVENT_BUS.register(this);
     }
 }

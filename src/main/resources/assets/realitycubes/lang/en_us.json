@@ -1,0 +1,7 @@
+{
+  "category.realitycubes": "Reality Cubes",
+  "key.realitycubes.reality_cube": "Activate Reality Cube",
+  "message.realitycubes.name": "%s's Reality Cube",
+  "message.realitycubes.exp": "Not enough experience",
+  "message.realitycubes.within": "Cannot use within another reality cube"
+}

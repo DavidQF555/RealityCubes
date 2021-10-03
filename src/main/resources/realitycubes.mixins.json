@@ -1,0 +1,8 @@
+{
+  "required": true,
+  "minVersion": "0.7",
+  "package": "io.github.davidqf555.minecraft.realitycubes.common.mixins",
+  "mixins": [
+    "IOWorkerMixin"
+  ]
+}
