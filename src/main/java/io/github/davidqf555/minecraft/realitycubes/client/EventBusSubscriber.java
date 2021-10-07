@@ -36,10 +36,6 @@ public class EventBusSubscriber {
         public static void onFMLClientSetup(FMLClientSetupEvent event) {
             KeyMappingsList.register();
             event.enqueueWork(() -> Arrays.stream(CapsuleType.values()).map(CapsuleType::getCapsule).forEach(capsule -> {
-                ItemProperties.register(capsule, new ResourceLocation(RealityCubes.MOD_ID, "filling"), (stack, world, entity, value) -> {
-                    CapsuleItem item = ((CapsuleItem) stack.getItem());
-                    return item.getProgress(stack, item.getDominantMemory(stack)) > 0.25 ? 1 : 0;
-                });
                 ItemProperties.register(capsule, new ResourceLocation(RealityCubes.MOD_ID, "progress"), (stack, world, entity, value) -> {
                     CapsuleItem item = ((CapsuleItem) stack.getItem());
                     return (float) item.getProgress(stack, item.getDominantMemory(stack));
