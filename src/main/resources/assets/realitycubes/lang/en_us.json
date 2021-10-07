@@ -1,5 +1,6 @@
 {
   "category.realitycubes": "Reality Cubes",
+  "item.realitycubes.capsule.progress": "%s%% Filled",
   "key.realitycubes.reality_cube": "Activate Reality Cube",
   "message.realitycubes.name": "%s's Reality Cube",
   "message.realitycubes.exp": "Not enough experience",

@@ -1,6 +1,9 @@
 package io.github.davidqf555.minecraft.realitycubes.common;
 
+import io.github.davidqf555.minecraft.realitycubes.common.items.CapsuleType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fmllegacy.network.NetworkRegistry;
@@ -12,6 +15,12 @@ import org.spongepowered.asm.mixin.Mixins;
 public class RealityCubes {
 
     public static final String MOD_ID = "realitycubes";
+    public static final CreativeModeTab TAB = new CreativeModeTab(MOD_ID) {
+        @Override
+        public ItemStack makeIcon() {
+            return CapsuleType.PRESET.getCapsule().getDefaultInstance();
+        }
+    };
     private static final String PROTOCOL_VERSION = "1";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(MOD_ID, MOD_ID),

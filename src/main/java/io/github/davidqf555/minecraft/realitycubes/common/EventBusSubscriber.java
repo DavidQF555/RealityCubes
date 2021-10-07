@@ -2,6 +2,7 @@ package io.github.davidqf555.minecraft.realitycubes.common;
 
 import io.github.davidqf555.minecraft.realitycubes.common.capabilities.RealityCubeSettings;
 import io.github.davidqf555.minecraft.realitycubes.common.capabilities.ReturnData;
+import io.github.davidqf555.minecraft.realitycubes.common.items.CapsuleType;
 import io.github.davidqf555.minecraft.realitycubes.common.packets.UpdateClientLevelsPacket;
 import io.github.davidqf555.minecraft.realitycubes.common.packets.UseRealityCubePacket;
 import io.github.davidqf555.minecraft.realitycubes.common.world.RealityCubeHelper;
@@ -13,14 +14,17 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -93,6 +97,17 @@ public class EventBusSubscriber {
         public static void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
             event.register(RealityCubeSettings.class);
             event.register(ReturnData.class);
+        }
+
+        @SubscribeEvent
+        public static void onRegisterItems(RegistryEvent.Register<Item> event) {
+            IForgeRegistry<Item> registry = event.getRegistry();
+            for (CapsuleType type : CapsuleType.values()) {
+                registry.register(type.getCapsule());
+                for (CapsuleType.MemoryType memory : type.getMemories()) {
+                    registry.register(memory.getItem());
+                }
+            }
         }
     }
 }
