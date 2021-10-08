@@ -11,17 +11,22 @@ import io.github.davidqf555.minecraft.realitycubes.common.world.properties.Defau
 import io.github.davidqf555.minecraft.realitycubes.common.world.properties.DefaultFluidType;
 import io.github.davidqf555.minecraft.realitycubes.common.world.properties.Preset;
 import io.github.davidqf555.minecraft.realitycubes.common.world.properties.shapes.ShapesHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public enum CapsuleType {
 
@@ -44,13 +49,15 @@ public enum CapsuleType {
     TIME(
             new MemoryType("midnight", 0xFF222222, settings -> settings.setTime(18000), new WorldPeriodicCriteria(instance -> instance.world.getDayTime() > 16000 && instance.world.getDayTime() < 20000))
     );
-
-    private final CapsuleItem capsule;
+    private final RegistryObject<CapsuleItem> capsule;
+    private final Supplier<Item> factory;
     private final MemoryType[] memories;
 
     CapsuleType(MemoryType... memories) {
         this.memories = memories;
-        capsule = (CapsuleItem) new CapsuleItem(this).setRegistryName(RealityCubes.MOD_ID, name().toLowerCase() + "_capsule");
+        ResourceLocation loc = new ResourceLocation(RealityCubes.MOD_ID, name().toLowerCase() + "_capsule");
+        capsule = RegistryObject.of(loc, ForgeRegistries.ITEMS);
+        factory = () -> new CapsuleItem(this).setRegistryName(loc);
     }
 
     public static void processCriteriaInstance(Criteria.Instance instance) {
@@ -66,12 +73,21 @@ public enum CapsuleType {
         }
     }
 
+    public Item[] createAll() {
+        Item[] all = new Item[memories.length + 1];
+        all[0] = factory.get();
+        for (int i = 0; i < memories.length; i++) {
+            all[i + 1] = memories[i].factory.get();
+        }
+        return all;
+    }
+
     public MemoryType[] getMemories() {
         return memories;
     }
 
     public CapsuleItem getCapsule() {
-        return capsule;
+        return capsule.get();
     }
 
     public List<ItemStack> getFromInventoryCapsules(Player player) {
@@ -89,19 +105,22 @@ public enum CapsuleType {
     public static class MemoryType {
 
         private final int color;
-        private final SettingsEditorItem item;
+        private final RegistryObject<SettingsEditorItem> item;
+        private final Supplier<Item> factory;
         private final String name;
         private final Criteria criteria;
 
         private MemoryType(String name, int color, Consumer<RealityCubeSettings> effect, Criteria criteria) {
             this.color = color;
             this.name = name;
-            item = (SettingsEditorItem) new SettingsEditorItem(effect).setRegistryName(RealityCubes.MOD_ID, name + "_memory");
             this.criteria = criteria;
+            ResourceLocation loc = new ResourceLocation(RealityCubes.MOD_ID, name.toLowerCase() + "_memory");
+            item = RegistryObject.of(loc, ForgeRegistries.ITEMS);
+            factory = () -> new SettingsEditorItem(effect).setRegistryName(loc);
         }
 
         public SettingsEditorItem getItem() {
-            return item;
+            return item.get();
         }
 
         public int getColor() {

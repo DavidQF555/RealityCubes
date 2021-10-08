@@ -103,10 +103,7 @@ public class EventBusSubscriber {
         public static void onRegisterItems(RegistryEvent.Register<Item> event) {
             IForgeRegistry<Item> registry = event.getRegistry();
             for (CapsuleType type : CapsuleType.values()) {
-                registry.register(type.getCapsule());
-                for (CapsuleType.MemoryType memory : type.getMemories()) {
-                    registry.register(memory.getItem());
-                }
+                registry.registerAll(type.createAll());
             }
         }
     }
