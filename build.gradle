@@ -72,7 +72,7 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.17.1-37.0.59'
+    minecraft 'net.minecraftforge:forge:1.17.1-37.0.83'
 }
 
 jar {
