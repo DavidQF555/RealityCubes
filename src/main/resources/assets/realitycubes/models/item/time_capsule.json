@@ -1,3 +1,28 @@
 {
-  "parent": "realitycubes:item/capsule"
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "realitycubes:item/capsule"
+  },
+  "elements": {
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "realitycubes:progress": 0.25
+      },
+      "model": "realitycubes:item/capsule_progress_1"
+    },
+    {
+      "predicate": {
+        "realitycubes:progress": 0.5
+      },
+      "model": "realitycubes:item/capsule_progress_2"
+    },
+    {
+      "predicate": {
+        "realitycubes:progress": 0.75
+      },
+      "model": "realitycubes:item/capsule_progress_3"
+    }
+  ]
 }
