@@ -81,6 +81,7 @@ public class RealityCubeWorldData extends SavedData {
         UUID id = RealityCubeHelper.getRealityCube(world);
         Entity owner = world.getEntity(id);
         if (owner != null && (((ServerPlayer) owner).experienceLevel > 0 || ((ServerPlayer) owner).totalExperience > 0)) {
+            world.setSpawnSettings(false, false);
             ServerLevel original = world.getServer().getLevel(getOriginLevel());
             RealityCubeSettings settings = getSettings();
             if (original != null) {
