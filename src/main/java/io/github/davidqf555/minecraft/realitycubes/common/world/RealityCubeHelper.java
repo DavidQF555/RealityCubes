@@ -118,6 +118,7 @@ public class RealityCubeHelper {
         DerivedLevelData derived = new DerivedLevelData(data, data.overworldData());
         ServerLevel newLevel = new ServerLevel(server, server.executor, server.storageSource, derived, key, dimension.type(), server.progressListenerFactory.create(11), dimension.generator(), worldGen.isDebug(), worldGen.seed(), ImmutableList.of(), false);
         overworld.getWorldBorder().addListener(new BorderChangeListener.DelegateBorderChangeListener(newLevel.getWorldBorder()));
+        newLevel.setSpawnSettings(false, false);
         server.forgeGetWorldMap().put(key, newLevel);
         server.markWorldsDirty();
         RealityCubeWorldData.create(newLevel, cube, originPos, originLevel);
