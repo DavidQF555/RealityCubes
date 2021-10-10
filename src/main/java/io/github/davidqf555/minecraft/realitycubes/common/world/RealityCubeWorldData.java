@@ -112,7 +112,7 @@ public class RealityCubeWorldData extends SavedData {
                 count = (int) (1 / RealityCubeSettings.RATE);
             }
             for (Ticker ticker : settings.getTickers()) {
-                ticker.onTick(world);
+                ticker.onTick(world, settings);
             }
         } else {
             RealityCubeHelper.kickAll(world);

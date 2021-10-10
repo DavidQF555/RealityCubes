@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.realitycubes.common.world.properties.tickers;
 
+import io.github.davidqf555.minecraft.realitycubes.common.capabilities.RealityCubeSettings;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.util.Constants;
@@ -13,7 +14,7 @@ public interface Ticker extends INBTSerializable<CompoundTag> {
         return ticker;
     }
 
-    void onTick(ServerLevel world);
+    void onTick(ServerLevel world, RealityCubeSettings settings);
 
     TickerType getType();
 
