@@ -16,12 +16,13 @@ public class ItemModelsGenerator extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        ModelFile progress1 = withExistingParent("progress_1", "item/generated").texture("layer0", "item/progress_1").texture("layer1", "item/capsule");
-        ModelFile progress2 = withExistingParent("progress_2", "item/generated").texture("layer0", "item/progress_2").texture("layer1", "item/capsule");
-        ModelFile progress3 = withExistingParent("progress_3", "item/generated").texture("layer0", "item/progress_3").texture("layer1", "item/capsule");
+        ModelFile progress1 = withExistingParent("progress_1", "item/generated").texture("layer0", "item/progress_1").texture("layer1", "item/capsule_overlay");
+        ModelFile progress2 = withExistingParent("progress_2", "item/generated").texture("layer0", "item/progress_2").texture("layer1", "item/capsule_overlay");
+        ModelFile progress3 = withExistingParent("progress_3", "item/generated").texture("layer0", "item/progress_3").texture("layer1", "item/capsule_overlay");
         for (CapsuleType type : CapsuleType.values()) {
             withExistingParent(type.getCapsule().getId().getPath(), "item/generated")
-                    .texture("layer0", "item/capsule")
+                    .texture("layer0", "item/progress_0")
+                    .texture("layer1", "item/capsule_overlay")
                     .override().predicate(CapsuleItem.PROGRESS_PROPERTY, 0.25f).model(progress1).end()
                     .override().predicate(CapsuleItem.PROGRESS_PROPERTY, 0.5f).model(progress2).end()
                     .override().predicate(CapsuleItem.PROGRESS_PROPERTY, 0.75f).model(progress3).end();

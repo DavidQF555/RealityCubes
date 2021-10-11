@@ -1,7 +1,6 @@
 package io.github.davidqf555.minecraft.realitycubes.client;
 
 import io.github.davidqf555.minecraft.realitycubes.common.RealityCubes;
-import io.github.davidqf555.minecraft.realitycubes.common.items.CapsuleColor;
 import io.github.davidqf555.minecraft.realitycubes.common.items.CapsuleItem;
 import io.github.davidqf555.minecraft.realitycubes.common.items.CapsuleType;
 import io.github.davidqf555.minecraft.realitycubes.common.packets.UseRealityCubePacket;
