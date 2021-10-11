@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.realitycubes.common;
 
+import io.github.davidqf555.minecraft.realitycubes.client.ItemModelsGenerator;
 import io.github.davidqf555.minecraft.realitycubes.common.capabilities.RealityCubeSettings;
 import io.github.davidqf555.minecraft.realitycubes.common.capabilities.ReturnData;
 import io.github.davidqf555.minecraft.realitycubes.common.items.CapsuleType;
@@ -9,6 +10,7 @@ import io.github.davidqf555.minecraft.realitycubes.common.world.RealityCubeHelpe
 import io.github.davidqf555.minecraft.realitycubes.common.world.RealityCubeWorldData;
 import io.github.davidqf555.minecraft.realitycubes.common.world.ShapeChunkGenerator;
 import net.minecraft.core.Registry;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,6 +26,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.HashMap;
@@ -91,6 +94,14 @@ public class EventBusSubscriber {
                 UseRealityCubePacket.register(index++);
                 UpdateClientLevelsPacket.register(index++);
             });
+        }
+
+        @SubscribeEvent
+        public static void onGatherData(GatherDataEvent event) {
+            if (event.includeClient()) {
+                DataGenerator gen = event.getGenerator();
+                gen.addProvider(new ItemModelsGenerator(gen, event.getExistingFileHelper()));
+            }
         }
 
         @SubscribeEvent

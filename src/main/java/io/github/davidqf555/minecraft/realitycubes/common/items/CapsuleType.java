@@ -86,8 +86,8 @@ public enum CapsuleType {
         return memories;
     }
 
-    public CapsuleItem getCapsule() {
-        return capsule.get();
+    public RegistryObject<CapsuleItem> getCapsule() {
+        return capsule;
     }
 
     public List<ItemStack> getFromInventoryCapsules(Player player) {
@@ -119,8 +119,8 @@ public enum CapsuleType {
             factory = () -> new SettingsEditorItem(effect).setRegistryName(loc);
         }
 
-        public SettingsEditorItem getItem() {
-            return item.get();
+        public RegistryObject<SettingsEditorItem> getItem() {
+            return item;
         }
 
         public int getColor() {

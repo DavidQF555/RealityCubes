@@ -5,6 +5,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -20,6 +21,7 @@ import java.util.List;
 
 public class CapsuleItem extends Item {
 
+    public static final ResourceLocation PROGRESS_PROPERTY = new ResourceLocation(RealityCubes.MOD_ID, "progress");
     private static final String PROGRESS = "item." + RealityCubes.MOD_ID + ".capsule.progress";
     private final CapsuleType type;
 
@@ -46,7 +48,7 @@ public class CapsuleItem extends Item {
         if (getProgress(stack, memory) >= 1) {
             IItemHandler inventory = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
             inventory.extractItem(slot, getItemStackLimit(stack), false);
-            inventory.insertItem(slot, memory.getItem().getDefaultInstance(), false);
+            inventory.insertItem(slot, memory.getItem().get().getDefaultInstance(), false);
         }
     }
 

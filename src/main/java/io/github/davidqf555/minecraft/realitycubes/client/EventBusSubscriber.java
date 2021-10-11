@@ -6,13 +6,13 @@ import io.github.davidqf555.minecraft.realitycubes.common.items.CapsuleItem;
 import io.github.davidqf555.minecraft.realitycubes.common.items.CapsuleType;
 import io.github.davidqf555.minecraft.realitycubes.common.packets.UseRealityCubePacket;
 import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fmllegacy.RegistryObject;
 
 import java.util.Arrays;
 
@@ -35,8 +35,8 @@ public class EventBusSubscriber {
         @SubscribeEvent
         public static void onFMLClientSetup(FMLClientSetupEvent event) {
             KeyMappingsList.register();
-            event.enqueueWork(() -> Arrays.stream(CapsuleType.values()).map(CapsuleType::getCapsule).forEach(capsule -> {
-                ItemProperties.register(capsule, new ResourceLocation(RealityCubes.MOD_ID, "progress"), (stack, world, entity, value) -> {
+            event.enqueueWork(() -> Arrays.stream(CapsuleType.values()).map(CapsuleType::getCapsule).map(RegistryObject::get).forEach(capsule -> {
+                ItemProperties.register(capsule, CapsuleItem.PROGRESS_PROPERTY, (stack, world, entity, value) -> {
                     CapsuleItem item = ((CapsuleItem) stack.getItem());
                     return (float) item.getProgress(stack, item.getDominantMemory(stack));
                 });
@@ -47,7 +47,7 @@ public class EventBusSubscriber {
         public static void onHandleItemColors(ColorHandlerEvent.Item event) {
             CapsuleColor color = new CapsuleColor();
             for (CapsuleType type : CapsuleType.values()) {
-                event.getItemColors().register(color, type.getCapsule());
+                event.getItemColors().register(color, type.getCapsule().get());
             }
         }
     }

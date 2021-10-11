@@ -18,7 +18,7 @@ public class RealityCubes {
     public static final CreativeModeTab TAB = new CreativeModeTab(MOD_ID) {
         @Override
         public ItemStack makeIcon() {
-            return CapsuleType.PRESET.getCapsule().getDefaultInstance();
+            return CapsuleType.PRESET.getCapsule().get().getDefaultInstance();
         }
     };
     private static final String PROTOCOL_VERSION = "1";

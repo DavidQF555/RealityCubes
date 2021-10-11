@@ -1,7 +1,0 @@
-{
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "realitycubes:item/progress_2",
-    "layer1": "realitycubes:item/capsule"
-  }
-}
