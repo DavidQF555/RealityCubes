@@ -3,6 +3,7 @@ package io.github.davidqf555.minecraft.realitycubes.common;
 import io.github.davidqf555.minecraft.realitycubes.client.ItemModelsGenerator;
 import io.github.davidqf555.minecraft.realitycubes.common.capabilities.RealityCubeSettings;
 import io.github.davidqf555.minecraft.realitycubes.common.capabilities.ReturnData;
+import io.github.davidqf555.minecraft.realitycubes.common.data.gen.RecipeGenerator;
 import io.github.davidqf555.minecraft.realitycubes.common.packets.UpdateClientLevelsPacket;
 import io.github.davidqf555.minecraft.realitycubes.common.packets.UseRealityCubePacket;
 import io.github.davidqf555.minecraft.realitycubes.common.world.RealityCubeHelper;
@@ -80,9 +81,12 @@ public class EventBusSubscriber {
 
         @SubscribeEvent
         public static void onGatherData(GatherDataEvent event) {
+            DataGenerator gen = event.getGenerator();
             if (event.includeClient()) {
-                DataGenerator gen = event.getGenerator();
                 gen.addProvider(new ItemModelsGenerator(gen, event.getExistingFileHelper()));
+            }
+            if (event.includeServer()) {
+                gen.addProvider(new RecipeGenerator(gen));
             }
         }
 

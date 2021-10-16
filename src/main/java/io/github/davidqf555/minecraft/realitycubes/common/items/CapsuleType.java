@@ -12,11 +12,12 @@ import io.github.davidqf555.minecraft.realitycubes.common.world.properties.Defau
 import io.github.davidqf555.minecraft.realitycubes.common.world.properties.Preset;
 import io.github.davidqf555.minecraft.realitycubes.common.world.properties.shapes.ShapesHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.Tag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.Biomes;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -30,30 +31,30 @@ import java.util.function.Supplier;
 
 public enum CapsuleType {
 
-    SHAPE(
+    SHAPE(Tags.Items.OBSIDIAN,
             new MemoryType("flat", 0xFF00FF00, settings -> settings.setShape(ShapesHelper.getShape("flat")), new BiomePeriodicCriteria(ImmutableList.of(Biomes.PLAINS, Biomes.SUNFLOWER_PLAINS))),
             new MemoryType("peak", 0xFF00FF00, settings -> settings.setShape(ShapesHelper.getShape("peak")), new WorldPeriodicCriteria(instance -> instance.player.position().y() > 100))
     ),
-    BIOME(
-            new MemoryType("plains", 0xFF00FF00, settings -> settings.setBiome(Biomes.PLAINS), new BiomePeriodicCriteria(ImmutableList.of(Biomes.PLAINS, Biomes.SUNFLOWER_PLAINS)))
+    BIOME(Tags.Items.RODS_BLAZE,
+            new MemoryType("plains", 0xFF00FF00, settings -> {
+                settings.setBiome(Biomes.PLAINS);
+                settings.setDefaultBlockType(DefaultBlockType.STONE);
+                settings.setDefaultFluidType(DefaultFluidType.WATER);
+            }, new BiomePeriodicCriteria(ImmutableList.of(Biomes.PLAINS, Biomes.SUNFLOWER_PLAINS)))
     ),
-    PRESET(
+    PRESET(Tags.Items.GEMS_DIAMOND,
             new MemoryType("amnesia", 0xFF8888FF, settings -> settings.applyPreset(Preset.getPreset("default")), new BlockBreakCriteria(ImmutableList.of()))
     ),
-    BLOCK(
-            new MemoryType("stone", 0xFF888888, settings -> settings.setDefaultBlockType(DefaultBlockType.STONE), new BlockBreakCriteria(ImmutableList.of(Blocks.STONE)))
-    ),
-    FLUID(
-            new MemoryType("water", 0xFF0000FF, settings -> settings.setDefaultFluidType(DefaultFluidType.WATER), new WorldPeriodicCriteria(instance -> instance.world.getBlockState(instance.player.blockPosition()).getBlock().equals(Blocks.WATER)))
-    ),
-    TIME(
+    TIME(Tags.Items.INGOTS_GOLD,
             new MemoryType("midnight", 0xFF222222, settings -> settings.setTime(18000), new WorldPeriodicCriteria(instance -> instance.world.getDayTime() > 16000 && instance.world.getDayTime() < 20000))
     );
+    private final Tag<Item> recipe;
     private final RegistryObject<CapsuleItem> capsule;
     private final Supplier<Item> factory;
     private final MemoryType[] memories;
 
-    CapsuleType(MemoryType... memories) {
+    CapsuleType(Tag<Item> recipe, MemoryType... memories) {
+        this.recipe = recipe;
         this.memories = memories;
         ResourceLocation loc = new ResourceLocation(RealityCubes.MOD_ID, name().toLowerCase() + "_capsule");
         capsule = RegistryObject.of(loc, ForgeRegistries.ITEMS);
@@ -71,6 +72,10 @@ public enum CapsuleType {
                 }
             }
         }
+    }
+
+    public Tag<Item> getRecipe() {
+        return recipe;
     }
 
     public Item[] createAll() {
