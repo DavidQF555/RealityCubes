@@ -25,6 +25,7 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -66,6 +67,10 @@ public class RealityCubeSettings implements INBTSerializable<CompoundTag> {
     public void setTickers(Collection<Ticker> tickers) {
         this.tickers.clear();
         this.tickers.addAll(tickers);
+    }
+
+    public void addTickers(Ticker... tickers) {
+        this.tickers.addAll(Arrays.asList(tickers));
     }
 
     public GenerationShape getShape() {
@@ -177,12 +182,12 @@ public class RealityCubeSettings implements INBTSerializable<CompoundTag> {
     public static class Provider implements ICapabilitySerializable<CompoundTag> {
 
         @CapabilityInject(RealityCubeSettings.class)
-        public static Capability<RealityCubeSettings> capability = null;
+        private static Capability<RealityCubeSettings> capability = null;
         private final LazyOptional<RealityCubeSettings> instance;
 
         public Provider() {
-            RealityCubeSettings equips = new RealityCubeSettings();
-            instance = LazyOptional.of(() -> equips);
+            RealityCubeSettings settings = new RealityCubeSettings();
+            instance = LazyOptional.of(() -> settings);
         }
 
         @Nonnull

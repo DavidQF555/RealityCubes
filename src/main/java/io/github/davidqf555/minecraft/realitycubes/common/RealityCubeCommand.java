@@ -31,9 +31,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.server.command.EnumArgument;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class RealityCubeCommand {
 
@@ -153,10 +151,7 @@ public class RealityCubeCommand {
         Ticker ticker = type.get();
         ticker.readAdditional(data);
         for (ServerPlayer player : targets) {
-            RealityCubeSettings settings = RealityCubeSettings.get(player);
-            List<Ticker> tickers = new ArrayList<>(settings.getTickers());
-            tickers.add(ticker);
-            settings.setTickers(tickers);
+            RealityCubeSettings.get(player).addTickers(ticker);
         }
         return targets.size();
     }

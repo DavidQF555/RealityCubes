@@ -3,6 +3,7 @@ package io.github.davidqf555.minecraft.realitycubes.common.world.properties.tick
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.github.davidqf555.minecraft.realitycubes.common.capabilities.RealityCubeSettings;
+import io.github.davidqf555.minecraft.realitycubes.common.capabilities.ReturnData;
 import io.github.davidqf555.minecraft.realitycubes.common.world.properties.tickers.Ticker;
 import io.github.davidqf555.minecraft.realitycubes.common.world.properties.tickers.TickerType;
 import net.minecraft.core.BlockPos;
@@ -33,24 +34,26 @@ import java.util.Map;
 public class SpawnerTicker implements Ticker {
 
     private final Map<EntityType<?>, Integer> entities;
-    private final List<SpawnCondition> conditions;
+    private final List<SpawnPredicate> conditions;
+    private final List<EntityEffect> effects;
     private SpawnPlacements.Type type;
-    private long period;
+    private double period;
 
     public SpawnerTicker() {
-        this(SpawnPlacements.Type.NO_RESTRICTIONS, ImmutableMap.of(), 400, ImmutableList.of());
+        this(SpawnPlacements.Type.NO_RESTRICTIONS, ImmutableMap.of(), 400, ImmutableList.of(), ImmutableList.of());
     }
 
-    public SpawnerTicker(SpawnPlacements.Type type, Map<EntityType<?>, Integer> entities, long period, List<SpawnCondition> conditions) {
+    public SpawnerTicker(SpawnPlacements.Type type, Map<EntityType<?>, Integer> entities, double period, List<SpawnPredicate> conditions, List<EntityEffect> effects) {
         this.type = type;
         this.entities = new HashMap<>(entities);
         this.period = period;
         this.conditions = new ArrayList<>(conditions);
+        this.effects = new ArrayList<>(effects);
     }
 
     @Override
     public void onTick(ServerLevel world, RealityCubeSettings settings) {
-        if (world.getGameTime() % period == 0 && world.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
+        if ((period < 2 || world.getGameTime() % (int) period == 0) && world.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
             ServerChunkCache cache = world.getChunkSource();
             int radius = settings.getChunkRadius();
             for (int cX = -radius; cX < radius; cX++) {
@@ -59,25 +62,30 @@ public class SpawnerTicker implements Ticker {
                     if (chunk != null) {
                         ChunkPos pos = chunk.getPos();
                         if (world.isPositionEntityTicking(pos)) {
-                            Entity entity = randomEntity(world);
-                            if (entity != null) {
-                                List<BlockPos> possible = new ArrayList<>();
-                                int x = pos.getMinBlockX();
-                                int z = pos.getMinBlockZ();
-                                for (int dX = 0; dX < 16; dX++) {
-                                    for (int dZ = 0; dZ < 16; dZ++) {
-                                        for (int y = world.getMinBuildHeight(); y < world.getMaxBuildHeight(); y++) {
-                                            BlockPos spawn = new BlockPos(x + dX, y, z + dZ);
-                                            if (canSpawn(entity, world, spawn)) {
-                                                possible.add(spawn);
+                            int count = Math.max(1, (int) (1 / period));
+                            for (int i = 0; i < count; i++) {
+                                Entity entity = randomEntity(world);
+                                if (entity != null) {
+                                    List<BlockPos> possible = new ArrayList<>();
+                                    int x = pos.getMinBlockX();
+                                    int z = pos.getMinBlockZ();
+                                    for (int dX = 0; dX < 16; dX++) {
+                                        for (int dZ = 0; dZ < 16; dZ++) {
+                                            for (int y = world.getMinBuildHeight(); y < world.getMaxBuildHeight(); y++) {
+                                                BlockPos spawn = new BlockPos(x + dX, y, z + dZ);
+                                                if (canSpawn(entity, world, spawn)) {
+                                                    possible.add(spawn);
+                                                }
                                             }
                                         }
                                     }
-                                }
-                                if (!possible.isEmpty()) {
-                                    BlockPos spawn = possible.get(world.random.nextInt(possible.size()));
-                                    entity.setPos(spawn.getX(), spawn.getY(), spawn.getZ());
-                                    world.addFreshEntity(entity);
+                                    if (!possible.isEmpty()) {
+                                        BlockPos spawn = possible.get(world.random.nextInt(possible.size()));
+                                        entity.setPos(spawn.getX(), spawn.getY(), spawn.getZ());
+                                        applyEffects(entity);
+                                        ReturnData.get(entity).setExists(false);
+                                        world.addFreshEntity(entity);
+                                    }
                                 }
                             }
                         }
@@ -89,10 +97,21 @@ public class SpawnerTicker implements Ticker {
 
     private boolean canSpawn(Entity entity, ServerLevelAccessor level, BlockPos pos) {
         boolean val = type.canSpawnAt(level, pos, entity.getType());
-        for (SpawnCondition condition : conditions) {
-            val = val && condition.canSpawn(level, pos);
+        if (val) {
+            for (SpawnPredicate condition : conditions) {
+                if (!condition.test(level, pos)) {
+                    return false;
+                }
+            }
+            return true;
         }
-        return val;
+        return false;
+    }
+
+    private void applyEffects(Entity entity) {
+        for (EntityEffect effect : effects) {
+            effect.accept(entity);
+        }
     }
 
     @Nullable
@@ -118,12 +137,17 @@ public class SpawnerTicker implements Ticker {
         CompoundTag entities = new CompoundTag();
         this.entities.forEach((type, weight) -> entities.putInt(type.getRegistryName().toString(), weight));
         tag.put("Entities", entities);
-        tag.putLong("Period", period);
+        tag.putDouble("Period", period);
         ListTag conditions = new ListTag();
-        for (SpawnCondition condition : this.conditions) {
+        for (SpawnPredicate condition : this.conditions) {
             conditions.add(StringTag.valueOf(condition.name()));
         }
         tag.put("Conditions", conditions);
+        ListTag effects = new ListTag();
+        for (EntityEffect effect : this.effects) {
+            effects.add(StringTag.valueOf(effect.name()));
+        }
+        tag.put("Effects", effects);
         return tag;
     }
 
@@ -140,12 +164,17 @@ public class SpawnerTicker implements Ticker {
                 }
             }
         }
-        if (nbt.contains("Period", Constants.NBT.TAG_LONG)) {
-            period = nbt.getLong("Period");
+        if (nbt.contains("Period", Constants.NBT.TAG_DOUBLE)) {
+            period = nbt.getDouble("Period");
         }
         if (nbt.contains("Conditions", Constants.NBT.TAG_LIST)) {
             for (Tag tag : nbt.getList("Conditions", Constants.NBT.TAG_STRING)) {
-                conditions.add(SpawnCondition.valueOf(tag.getAsString()));
+                conditions.add(SpawnPredicate.valueOf(tag.getAsString()));
+            }
+        }
+        if (nbt.contains("Effects", Constants.NBT.TAG_LIST)) {
+            for (Tag tag : nbt.getList("Effects", Constants.NBT.TAG_STRING)) {
+                effects.add(EntityEffect.valueOf(tag.getAsString()));
             }
         }
     }
